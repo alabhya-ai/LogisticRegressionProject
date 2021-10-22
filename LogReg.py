@@ -65,7 +65,7 @@ class LogisticRegression(object):
     z = self.theta[0, 0] + np.dot(X, self.theta[1:]) # value to be passed to sigmoid
     h = 1.0 / (1 + np.exp(-z)) # hypothesis
 
-    return np.array([1 if i >= 0.5 else 0 for i in h])
+    return np.array([1 if i >= threshold else 0 for i in h])
 
   def pred_prob(self, X):
     '''Returns the probabilities output by the model on given X.'''
