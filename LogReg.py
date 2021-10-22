@@ -4,7 +4,7 @@ class LogisticRegression(object):
   '''Run logistic Regression.
   Initialize an object and call the 'apply' function in this class.
   Use the 'pred' method to predict with given X or 'pred_prob' to output the probabilities.
-  Use 'regularize' method to regularized found theta.
+  Use 'regularize' method to regularize found theta.
 
   -Numpy should be imported as np.
   -Both dependent and independent variables need to be 'np.array' class objects.
