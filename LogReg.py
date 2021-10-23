@@ -14,10 +14,10 @@ class LogisticRegression(object):
   def __init__(self, independent_var, dependent_var):
     self.m =  dependent_var.shape[0] # no. of data points
     self.y = dependent_var # dependent variable
-    self.X = (independent_var - independent_var.mean()) / independent_var.std() # standardization for independent variable
+    self.X = (independent_var - independent_var.mean()) / independent_var.std() # standardization
     self.X = np.hstack((np.ones((self.m, 1)), self.X)) # adding column of ones in independent variable
-    self.theta = np.zeros((self.X.shape[1], 1)) # setting initial theta as zeros
     self.n = self.X.shape[1] # no. of features
+    self.theta = np.zeros((self.n, 1)) # setting initial theta as zeros
 
   def gd(self, num_of_iterations, alpha, hist):
     '''runs gradient descent and sets self.theta to best theta'''
@@ -96,7 +96,7 @@ class LogisticRegression(object):
     return (np.dot(self.y.T, np.log(h)) + np.dot((1 - self.y).T, np.log(1 - h))) / -self.m
 
   def score(self, threshold):
-    '''Returns the F-1 score for predictions on given X
+    '''Returns the F-1 score for predictions on training dataset
     parameters:
     threshold: threshold for predicting whether data point lies in class 0 or 1
     '''
