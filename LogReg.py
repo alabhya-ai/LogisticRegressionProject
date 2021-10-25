@@ -1,5 +1,6 @@
 '''LogisticRegression by Alabs (https://www.instagram.com/aealabs/)'''
 
+import numpy as np
 class LogisticRegression(object):
   '''Run logistic Regression.
   Initialize an object and call the 'apply' function in this class.
@@ -25,7 +26,7 @@ class LogisticRegression(object):
     if hist:
       l = np.ones((1, num_of_iterations)) # to store loss history
       for i in range(num_of_iterations):
-        h = 1.0 / (1 + np.exp(-np.dot(self.X, self.theta))) # hypothesis (sigmoid)
+        h = 1.0 / (1 + np.exp(-np.dot(self.X, self.theta).astype(np.float))) # hypothesis (sigmoid)
         grad = np.dot(self.X.T, np.array([h[i] - self.y[i] for i in range(self.m)])) / self.m # gradient
         self.theta = self.theta - (alpha * grad) # theta update rule
         l[0, i] = np.dot(self.y.T, np.log(h)) + np.dot((1 - self.y).T, np.log(1 - h)) # loss
@@ -34,8 +35,8 @@ class LogisticRegression(object):
 
     else:
       for i in range(num_of_iterations):
-        h = 1.0 / (1 + np.exp(-np.dot(self.X, self.theta))) # hypothesis (sigmoid)
-        self.theta = self.theta - ((alpha / self.m) * np.dot(self.X.T, np.array([h[i] - self.y[i] for i in range(self.m)]))) # theta update rule
+        h = 1.0 / (1 + np.exp(-np.dot(self.X, self.theta).astype(np.float))) # hypothesis (sigmoid)
+        self.theta = self.theta - (alpha * np.dot(self.X.T, np.array([h[i] - self.y[i] for i in range(self.m)])) / self.m) # theta update rule
 
   def sgd(self, num_of_iterations, alpha, hist):
     '''runs stochastic gradient descent and returns best theta'''
@@ -46,7 +47,7 @@ class LogisticRegression(object):
       for i in range(num_of_iterations):
         r = np.random.randint(0, self.m)
         Xr, Yr = self.X[r, :], self.y[r] # random data point
-        Hr = 1.0 / (1 + np.exp(-np.dot(Xr, self.theta))) # hypothesis given by the random data point (sigmoid)
+        Hr = 1.0 / (1 + np.exp(-np.dot(Xr, self.theta).astype(np.float))) # hypothesis given by the random data point (sigmoid)
         self.theta = self.theta - ((alpha * (Xr.reshape(self.n, 1) * (Hr - Yr))) / self.m) # theta update rule
         l[0, i] = (Yr * np.log(Hr)) + ((1 - Yr) * np.log(1 - Hr)) # loss
 
@@ -56,14 +57,14 @@ class LogisticRegression(object):
       for i in range(num_of_iterations):
         r = np.random.randint(0, self.m)
         Xr, Yr = self.X[r, :], self.y[r] # random data point
-        Hr = 1.0 / (1 + np.exp(-np.dot(Xr, self.theta))) # hypothesis given by the random data point (sigmoid)
+        Hr = 1.0 / (1 + np.exp(-np.dot(Xr, self.theta).astype(np.float))) # hypothesis given by the random data point (sigmoid)
         self.theta = self.theta - ((alpha * (Xr.reshape(self.n, 1) * (Hr - Yr))) / self.m) # theta update rule
 
   def pred(self, X, threshold):
     '''returns predictions made by the model according to the given threshold on given X'''
     X = (X - X.mean()) / X.std()# standardization
     z = self.theta[0, 0] + np.dot(X, self.theta[1:]) # value to be passed to sigmoid
-    h = 1.0 / (1 + np.exp(-z)) # hypothesis
+    h = 1.0 / (1 + np.exp(-z.astype(np.float))) # hypothesis
 
     return np.array([1 if i >= threshold else 0 for i in h])
 
@@ -73,7 +74,7 @@ class LogisticRegression(object):
     X = (X - X.mean()) / X.std()
     z = self.theta[0, 0] + np.dot(X, self.theta[1:]) # value to be passed to sigmoid
 
-    return 1.0 / (1 + np.exp(-z))
+    return 1.0 / (1 + np.exp(-z.astype(np.float)))
 
   def regularize(self, lambda_, set_param=True):
     '''returns regularized version of theta found by optimization algorithm.
@@ -92,7 +93,7 @@ class LogisticRegression(object):
       return tmp
 
   def loss(self):
-    h = 1.0 / (1 + np.exp(-np.dot(self.X, self.theta))) # hypothesis (sigmoid)
+    h = 1.0 / (1 + np.exp(-np.dot(self.X, self.theta).astype(np.float))) # hypothesis (sigmoid)
     return (np.dot(self.y.T, np.log(h)) + np.dot((1 - self.y).T, np.log(1 - h))) / -self.m
 
   def score(self, threshold):
@@ -101,8 +102,8 @@ class LogisticRegression(object):
     threshold: threshold for predicting whether data point lies in class 0 or 1
     '''
 
-    s = 1.0 / (1 + np.exp(-np.dot(self.X, self.theta))) # probabilities
-    p = np.array([1 if i >= 0.5 else 0 for i in s]) # predictions
+    s = 1.0 / (1 + np.exp(-np.dot(self.X, self.theta).astype(np.float))) # probabilities
+    p = np.array([1 if i >= threshold else 0 for i in s]) # predictions
     tp, tn, fp, fn = 0, 0, 0, 0 # true positive, true negative, false positive, false negative
 
     for i in range(self.y.shape[0]):
