@@ -7,18 +7,21 @@ class LogisticRegression(object):
   Use the 'pred' method to predict with given X or 'pred_prob' to output the probabilities.
   Use 'regularize' method to regularize found theta.
 
-  -Numpy should be imported as np.
+  -Numpy is imported as np.
   -Both dependent and independent variables need to be 'np.array' class objects.
-  -No need to feature scale your data since this class does that for you.
+  -No need to feature scale your data. (The algorithm is run on feature scaled data)
   '''
 
   def __init__(self, independent_var, dependent_var):
+    """parameters:
+        independent_var: Data containing features (independent variable)
+        dependent_var: Data containing labels (dependent variable)
+    """
     self.m =  dependent_var.shape[0] # no. of data points
     self.y = dependent_var # dependent variable
     self.X = (independent_var - independent_var.mean()) / independent_var.std() # standardization
     self.X = np.hstack((np.ones((self.m, 1)), self.X)) # adding column of ones in independent variable
-    self.n = self.X.shape[1] # no. of features
-    self.theta = np.zeros((self.n, 1)) # setting initial theta as zeros
+    self.theta = np.zeros((self.X.shape[1], 1)) # setting initial theta as zeros
 
   def gd(self, num_of_iterations, alpha, hist):
     '''runs gradient descent and sets self.theta to best theta'''
@@ -48,7 +51,7 @@ class LogisticRegression(object):
         r = np.random.randint(0, self.m)
         Xr, Yr = self.X[r, :], self.y[r] # random data point
         Hr = 1.0 / (1 + np.exp(-np.dot(Xr, self.theta).astype(np.float))) # hypothesis given by the random data point (sigmoid)
-        self.theta = self.theta - ((alpha * (Xr.reshape(self.n, 1) * (Hr - Yr))) / self.m) # theta update rule
+        self.theta = self.theta - ((alpha * (Xr.T * (Hr - Yr))) / self.m) # theta update rule
         l[0, i] = (Yr * np.log(Hr)) + ((1 - Yr) * np.log(1 - Hr)) # loss
 
       return -l
@@ -58,7 +61,7 @@ class LogisticRegression(object):
         r = np.random.randint(0, self.m)
         Xr, Yr = self.X[r, :], self.y[r] # random data point
         Hr = 1.0 / (1 + np.exp(-np.dot(Xr, self.theta).astype(np.float))) # hypothesis given by the random data point (sigmoid)
-        self.theta = self.theta - ((alpha * (Xr.reshape(self.n, 1) * (Hr - Yr))) / self.m) # theta update rule
+        self.theta = self.theta - ((alpha * (Xr.T * (Hr - Yr))) / self.m) # theta update rule
 
   def pred(self, X, threshold):
     '''returns predictions made by the model according to the given threshold on given X'''
@@ -88,7 +91,7 @@ class LogisticRegression(object):
       self.theta[1:, 0] = self.theta[1:, 0] * lambda_ / self.m
     else:
       tmp = np.zeros(self.theta.shape)
-      tmp[0, 0] = self.theta[0, 0]
+      tmp[0, 0] = self.theta[0, 0] # no update required for constant term
       tmp[1:, 0] = self.theta[1:, 0] * lambda_ / self.m
       return tmp
 
